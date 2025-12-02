@@ -1,104 +1,78 @@
 import React, { useState } from "react";
-import API from "../api";
+import API, { setToken } from "../api";
 import Register from "./Register";
 
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [showRegister, setShowRegister] = useState(false);
 
-  // Show Register UI instead of Login
   if (showRegister) {
-    return <Register onBack={() => setShowRegister(false)} />;
+    return <Register onRegistered={() => setShowRegister(false)} />;
   }
 
-  const handleLogin = async () => {
+  async function handleLogin() {
+    setLoading(true);
+    setError("");
+
     try {
-      const res = await API.post("/auth/token", {
-        username: email,
-        password: password,
+      const params = new URLSearchParams();
+      params.append("username", email);
+      params.append("password", password);
+
+      const res = await API.post("/auth/token", params, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
       });
 
-      localStorage.setItem("token", res.data.access_token);
+      const token = res.data.access_token;
+      setToken(token);
+      localStorage.setItem("token", token);
+
       onLogin();
     } catch (err) {
-      setMessage("Invalid credentials");
+      setError("Invalid email or password");
     }
-  };
+
+    setLoading(false);
+  }
 
   return (
-    <div style={container}>
-      <div style={card}>
-        <h2>Rent Tracker</h2>
+    <div className="card">
+      <h2>Rent Tracker</h2>
 
-        <input
-          type="email"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-          style={inputStyle}
-        />
+      <input
+        type="text"
+        placeholder="Email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-          style={inputStyle}
-        />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
 
-        <button onClick={handleLogin} style={buttonStyle}>
-          Login
-        </button>
+      <button onClick={handleLogin} disabled={loading}>
+        {loading ? "Logging in..." : "Login"}
+      </button>
 
-        {message && <p style={{ color: "red" }}>{message}</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <p style={{ marginTop: 15, textAlign: "center" }}>
-          First time?
-          <span
-            style={{ color: "#0aa1a4", cursor: "pointer", marginLeft: 6 }}
-            onClick={() => setShowRegister(true)}
-          >
-            Create an account
-          </span>
-        </p>
-      </div>
+      <p style={{ marginTop: "10px" }}>
+        First time?{" "}
+        <span
+          style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }}
+          onClick={() => setShowRegister(true)}
+        >
+          Register Here
+        </span>
+      </p>
     </div>
   );
 }
 
 export default Login;
-
-const container = {
-  minHeight: "100vh",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  backgroundColor: "#f1fafb",
-};
-
-const card = {
-  width: "420px",
-  padding: "30px",
-  background: "#fff",
-  borderRadius: "12px",
-  boxShadow: "0px 4px 15px rgba(0,0,0,0.1)",
-};
-
-const inputStyle = {
-  width: "100%",
-  padding: "12px",
-  marginBottom: "10px",
-  borderRadius: "8px",
-  border: "1px solid #ddd",
-};
-
-const buttonStyle = {
-  width: "100%",
-  padding: "12px",
-  backgroundColor: "#0aa1a4",
-  color: "white",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontSize: "16px",
-};
