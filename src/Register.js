@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import API from "./api";
 
-function Register() {
+function Register({ onRegistered }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,8 +20,8 @@ function Register() {
         password,
       });
 
-      setMessage("Registration successful! Redirecting...");
-      setTimeout(() => (window.location.href = "/"), 1500);
+      setMessage("Registration successful!");
+      setTimeout(() => onRegistered(), 1000);
 
     } catch (err) {
       setMessage(err.response?.data?.detail || "Registration failed");
