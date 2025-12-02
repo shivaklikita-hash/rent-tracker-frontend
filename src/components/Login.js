@@ -5,74 +5,93 @@ import Register from "./Register";
 function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showRegister, setShowRegister] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [showRegister, setShowRegister] = useState(false);
 
   if (showRegister) {
     return <Register onRegistered={() => setShowRegister(false)} />;
   }
 
   async function handleLogin() {
-    setLoading(true);
-    setError("");
-
     try {
-      const params = new URLSearchParams();
-      params.append("username", email);
-      params.append("password", password);
+      setLoading(true);
+      setError("");
 
-      const res = await API.post("/auth/token", params, {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      });
+      const form = new FormData();
+      form.append("username", email);
+      form.append("password", password);
 
+      const res = await API.post("/auth/token", form);
       const token = res.data.access_token;
-      setToken(token);
-      localStorage.setItem("token", token);
 
+      localStorage.setItem("token", token);
+      setToken(token);
       onLogin();
     } catch (err) {
       setError("Invalid email or password");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   }
 
   return (
-    <div className="card">
-      <h2>Rent Tracker</h2>
+    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: "#f1fafb" }}>
+      <div style={{ width: "420px", padding: "30px", background: "#fff", borderRadius: "12px", boxShadow: "0px 4px 15px rgba(0,0,0,0.1)" }}>
+        
+        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Rent Tracker</h2>
 
-      <input
-        type="text"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={inputStyle}
+        />
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={inputStyle}
+        />
 
-      <button onClick={handleLogin} disabled={loading}>
-        {loading ? "Logging in..." : "Login"}
-      </button>
+        <button onClick={handleLogin} style={buttonStyle}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p style={{ color: "#c0392b", textAlign: "center", marginTop: "10px" }}>{error}</p>}
 
-      <p style={{ marginTop: "10px" }}>
-        First time?{" "}
-        <span
-          style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }}
-          onClick={() => setShowRegister(true)}
-        >
-          Register Here
-        </span>
-      </p>
+        <p style={{ marginTop: "20px", textAlign: "center" }}>
+          First time?{" "}
+          <span style={{ color: "#0aa1a4", cursor: "pointer" }} onClick={() => setShowRegister(true)}>
+            Register Here
+          </span>
+        </p>
+      </div>
     </div>
   );
 }
+
+const inputStyle = {
+  width: "100%",
+  padding: "12px",
+  marginBottom: "12px",
+  border: "1px solid #ddd",
+  borderRadius: "8px",
+  fontSize: "15px",
+};
+
+const buttonStyle = {
+  width: "100%",
+  padding: "12px",
+  backgroundColor: "#0aa1a4",
+  color: "#fff",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+  fontSize: "16px",
+};
 
 export default Login;
