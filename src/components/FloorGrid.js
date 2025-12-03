@@ -3,54 +3,100 @@ import API from "../api";
 
 export default function FloorGrid({ buildingId }) {
   const [floors, setFloors] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState(null);
 
   useEffect(() => {
     fetchFloors();
   }, []);
 
   async function fetchFloors() {
-    const res = await API.get(`/floors?building_id=${buildingId}`);
-    setFloors(res.data || []);
+    try {
+      const res = await API.get(`/floors?building_id=${buildingId}`);
+      setFloors(res.data || []);
+    } catch (err) {
+      console.error("Error loading floors", err);
+    }
   }
 
   async function addFloor() {
     const num = prompt("Enter floor number:");
     if (!num) return;
-    await API.post("/floors", {
-      building_id: buildingId,
-      floor_number: parseInt(num),
-    });
-    fetchFloors();
+
+    try {
+      await API.post("/floors", {
+        building_id: buildingId,
+        floor_number: parseInt(num),
+      });
+      fetchFloors();
+    } catch (err) {
+      alert("Failed to add floor");
+    }
   }
 
   async function deleteFloor(floorId) {
-    if (!window.confirm("Delete this floor? Rooms will also be deleted.")) return;
-    await API.delete(`/floors/${floorId}`);
-    fetchFloors();
+    if (!window.confirm("Delete this floor? Rooms under this floor will also be removed.")) return;
+
+    try {
+      await API.delete(`/floors/${floorId}`);
+      fetchFloors();
+    } catch (err) {
+      alert("Failed to delete floor");
+    }
   }
 
   async function deleteBuilding() {
-    if (!window.confirm("Delete entire building? All floors & rooms will be removed.")) return;
-    await API.delete(`/buildings/${buildingId}`);
-    setFloors([]);
+    if (!window.confirm("Delete ENTIRE building? This will delete all floors + rooms.")) return;
+
+    try {
+      await API.delete(`/buildings/${buildingId}`);
+      setFloors([]);
+    } catch (err) {
+      alert("Failed to delete building");
+    }
   }
 
   return (
     <div style={{ padding: "20px" }}>
-      <h2>🏢 Building Overview</h2>
+      <div className="header-row">
+        <h2>🏢 Building Overview</h2>
+        <button className="btn small" onClick={addFloor}>➕ Add Floor</button>
+      </div>
 
-      <button className="add-floor" onClick={addFloor}>➕ Add Floor</button>
+      {floors.length === 0 && (
+        <p style={{ color: "#666", marginTop: "10px" }}>No floors yet. Add one!</p>
+      )}
 
-      {floors.map(f => (
-        <SingleFloor key={f.id} floor={f} onDelete={deleteFloor} />
+      {floors.map((f) => (
+        <SingleFloor 
+          key={f.id} 
+          floor={f} 
+          onDelete={deleteFloor} 
+          onRoomSelect={setSelectedRoom} 
+        />
       ))}
 
-      <button className="delete-building" onClick={deleteBuilding}>🗑 Delete Building</button>
+      <button className="btn danger" onClick={deleteBuilding}>
+        🗑 Delete Building
+      </button>
+
+      {/* Room Modal will be added later */}
+      {selectedRoom && (
+        <div className="modal-overlay">
+          <div className="modal-box">
+            <h3>Room {selectedRoom.room_number}</h3>
+            <p>Payment modal coming next…</p>
+
+            <button className="btn" onClick={() => setSelectedRoom(null)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-function SingleFloor({ floor, onDelete }) {
+function SingleFloor({ floor, onDelete, onRoomSelect }) {
   const [rooms, setRooms] = useState([]);
 
   useEffect(() => {
@@ -58,28 +104,31 @@ function SingleFloor({ floor, onDelete }) {
   }, []);
 
   async function fetchRooms() {
-    const res = await API.get(`/rooms?floor_id=${floor.id}`);
-    setRooms(res.data || []);
+    try {
+      const res = await API.get(`/rooms?floor_id=${floor.id}`);
+      setRooms(res.data || []);
+    } catch (err) {
+      console.error("Error loading rooms", err);
+    }
   }
 
   async function addRoom() {
-    const num = prompt("Room number (e.g. 101)");
+    const num = prompt("Room number (e.g., 101)");
     if (!num) return;
-    await API.post("/rooms", { floor_id: floor.id, room_number: num });
-    fetchRooms();
+
+    try {
+      await API.post("/rooms", { floor_id: floor.id, room_number: num });
+      fetchRooms();
+    } catch (err) {
+      alert("Failed to add room");
+    }
   }
 
   return (
     <div className="floor-box">
       <div className="floor-header">
-        <h4>Floor {floor.floor_number}</h4>
-
-        <button
-          className="delete-floor"
-          onClick={() => onDelete(floor.id)}
-        >
-          🗑
-        </button>
+        <h3>🏬 Floor {floor.floor_number}</h3>
+        <button className="delete-floor" onClick={() => onDelete(floor.id)}>🗑</button>
       </div>
 
       <div className="grid">
@@ -87,9 +136,9 @@ function SingleFloor({ floor, onDelete }) {
           <div
             key={r.id}
             className={`room ${r.last_status || "pending"}`}
-            onClick={() => alert("Open room modal (will implement next)")}
+            onClick={() => onRoomSelect(r)}
           >
-            <div>{r.room_number}</div>
+            {r.room_number}
           </div>
         ))}
 
