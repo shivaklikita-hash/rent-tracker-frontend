@@ -1,28 +1,239 @@
-:root{
-  --bg:#f6fbfb;
-  --card:#ffffff;
-  --muted:#6b7280;
-  --accent:#0ea5a4;
-  --accent-dark:#089191;
+/* 🎨 GLOBAL THEME */
+:root {
+  --bg: #f6fbfb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #0ea5a4;
+  --accent-dark: #089191;
   --border: #e6eef0;
+  --danger: #e63946;
+  --danger-dark: #d62828;
 }
-body{font-family:Inter,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:14px;color:#0f172a}
-.container{max-width:1100px;margin:0 auto}
-.topbar{display:flex;justify-content:space-between;align-items:center}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;box-shadow:0 6px 18px rgba(2,6,23,0.04)}
-.cards{display:flex;gap:12px;flex-wrap:wrap;margin-top:12px}
-.building{width:320px}
-.card-head{display:flex;justify-content:space-between;align-items:center}
-.btn{background:var(--accent);color:white;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
-.btn.ghost{background:transparent;color:var(--accent);border:1px solid var(--accent)}
-.btn.small{padding:6px 8px;font-size:13px}
-.floor{margin-top:10px}
-.grid{display:flex;gap:8px;flex-wrap:wrap}
-.room{width:70px;height:70px;border-radius:8px;display:flex;align-items:center;justify-content:center;border:1px solid #dbe7e7}
-.room.pending{background:#fff9f9}
-.room.paid{background:#e6fffb}
-.room.partial{background:#fff7ed}
-.room.add{background:#f1fdfd;border:2px dashed var(--border);cursor:pointer;font-weight:600}
-.center{max-width:420px;margin:40px auto;padding:20px}
-.muted{color:var(--muted);font-size:13px}
-.input{display:block;width:100%;padding:8px;margin:8px 0;border:1px solid #e6eef0;border-radius:8px}
+
+body {
+  font-family: Inter, Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  margin: 0;
+  padding: 14px;
+  color: #0f172a;
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---------------------- */
+/* 🎯 TOP AREA */
+/* ---------------------- */
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn {
+  background: var(--accent);
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: var(--accent-dark);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.btn.small {
+  padding: 6px 8px;
+  font-size: 13px;
+}
+
+/* ---------------------- */
+/* 🏢 BUILDINGS */
+/* ---------------------- */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.04);
+}
+
+.cards {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.building {
+  width: 320px;
+}
+
+/* Building header with icon + delete button */
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.building-icon {
+  font-size: 26px;
+  color: var(--accent);
+  margin-right: 4px;
+}
+
+/* Delete building (danger style) */
+.btn-delete-building {
+  background: var(--danger);
+  color: white;
+  border: none;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-delete-building:hover {
+  background: var(--danger-dark);
+}
+
+/* Add Floor button inside building card */
+.btn-add-floor {
+  width: 100%;
+  background: var(--accent);
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.btn-add-floor:hover {
+  background: var(--accent-dark);
+}
+
+/* ---------------------- */
+/* 🏢 FLOORS */
+/* ---------------------- */
+
+.floor-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(2, 6, 23, 0.05);
+}
+
+.floor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+/* Delete floor button */
+.btn-delete-floor {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.btn-delete-floor:hover {
+  color: var(--danger);
+}
+
+/* ---------------------- */
+/* 🚪 ROOMS */
+/* ---------------------- */
+
+.grid {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.room {
+  width: 70px;
+  height: 70px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbe7e7;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+/* Room status colors */
+.room.pending {
+  background: #fff9f9;
+}
+
+.room.paid {
+  background: #e6fffb;
+}
+
+.room.partial {
+  background: #fff7ed;
+}
+
+/* Add room button */
+.room.add {
+  background: #f0fafa;
+  border: 2px dashed var(--border);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.room.add:hover {
+  background: #e6f7f7;
+}
+
+/* ---------------------- */
+/* AUTH SCREENS */
+/* ---------------------- */
+
+.center {
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.input {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin: 8px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+/* ---------------------- */
+/* SMOOTH TRANSITION */
+/* ---------------------- */
+
+* {
+  transition: 0.15s ease-in-out;
+}
