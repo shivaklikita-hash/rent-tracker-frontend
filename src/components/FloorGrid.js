@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "../api";
+import RoomModal from "./RoomModal";
 
 export default function FloorGrid({ buildingId }) {
   const [floors, setFloors] = useState([]);
@@ -67,11 +68,11 @@ export default function FloorGrid({ buildingId }) {
       )}
 
       {floors.map((f) => (
-        <SingleFloor 
-          key={f.id} 
-          floor={f} 
-          onDelete={deleteFloor} 
-          onRoomSelect={setSelectedRoom} 
+        <SingleFloor
+          key={f.id}
+          floor={f}
+          onDelete={deleteFloor}
+          onRoomSelect={setSelectedRoom}
         />
       ))}
 
@@ -79,22 +80,22 @@ export default function FloorGrid({ buildingId }) {
         🗑 Delete Building
       </button>
 
-      {/* Room Modal will be added later */}
       {selectedRoom && (
-        <div className="modal-overlay">
-          <div className="modal-box">
-            <h3>Room {selectedRoom.room_number}</h3>
-            <p>Payment modal coming next…</p>
-
-            <button className="btn" onClick={() => setSelectedRoom(null)}>
-              Close
-            </button>
-          </div>
-        </div>
+        <RoomModal
+          room={selectedRoom}
+          onClose={() => setSelectedRoom(null)}
+          onSaved={() => {
+            if (typeof selectedRoom.fetchRooms === "function") {
+              selectedRoom.fetchRooms();
+            }
+            setSelectedRoom(null);
+          }}
+        />
       )}
     </div>
   );
 }
+
 
 function SingleFloor({ floor, onDelete, onRoomSelect }) {
   const [rooms, setRooms] = useState([]);
@@ -136,7 +137,7 @@ function SingleFloor({ floor, onDelete, onRoomSelect }) {
           <div
             key={r.id}
             className={`room ${r.last_status || "pending"}`}
-            onClick={() => onRoomSelect(r)}
+            onClick={() => onRoomSelect({ ...r, fetchRooms })}
           >
             {r.room_number}
           </div>
