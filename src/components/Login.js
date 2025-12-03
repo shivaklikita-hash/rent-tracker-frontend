@@ -18,11 +18,14 @@ function Login({ onLogin }) {
       setLoading(true);
       setError("");
 
-      const form = new FormData();
+      const form = new URLSearchParams();
       form.append("username", email);
       form.append("password", password);
 
-      const res = await API.post("/auth/token", form);
+      const res = await API.post("/auth/token", form, {
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      });
+
       const token = res.data.access_token;
 
       localStorage.setItem("token", token);
@@ -36,10 +39,27 @@ function Login({ onLogin }) {
   }
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: "#f1fafb" }}>
-      <div style={{ width: "420px", padding: "30px", background: "#fff", borderRadius: "12px", boxShadow: "0px 4px 15px rgba(0,0,0,0.1)" }}>
-        
-        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>Rent Tracker</h2>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+        background: "#f1fafb",
+      }}
+    >
+      <div
+        style={{
+          width: "420px",
+          padding: "30px",
+          background: "#fff",
+          borderRadius: "12px",
+          boxShadow: "0px 4px 15px rgba(0,0,0,0.1)",
+        }}
+      >
+        <h2 style={{ textAlign: "center", marginBottom: "20px" }}>
+          Rent Tracker
+        </h2>
 
         <input
           type="email"
@@ -61,11 +81,24 @@ function Login({ onLogin }) {
           {loading ? "Logging in..." : "Login"}
         </button>
 
-        {error && <p style={{ color: "#c0392b", textAlign: "center", marginTop: "10px" }}>{error}</p>}
+        {error && (
+          <p
+            style={{
+              color: "#c0392b",
+              textAlign: "center",
+              marginTop: "10px",
+            }}
+          >
+            {error}
+          </p>
+        )}
 
         <p style={{ marginTop: "20px", textAlign: "center" }}>
           First time?{" "}
-          <span style={{ color: "#0aa1a4", cursor: "pointer" }} onClick={() => setShowRegister(true)}>
+          <span
+            style={{ color: "#0aa1a4", cursor: "pointer" }}
+            onClick={() => setShowRegister(true)}
+          >
             Register Here
           </span>
         </p>
